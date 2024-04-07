@@ -37,15 +37,15 @@ namespace LegacyApp
                 LastName = lastName
             };
 
-            if (client.Type == "VeryImportantClient")
+            if (client.Type == LegacyAppConstants.VERY_IMPORTANT_CLIENT)
             {
                 user.HasCreditLimit = false;
             }
-            else if (client.Type == "ImportantClient")
+            else if (client.Type == LegacyAppConstants.IMPORTANT_CLIENT)
             {
                 using (var userCreditService = new UserCreditService())
                 {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                    int creditLimit = userCreditService.GetCreditLimit(user.LastName);
                     creditLimit = creditLimit * 2;
                     user.CreditLimit = creditLimit;
                 }
@@ -55,7 +55,7 @@ namespace LegacyApp
                 user.HasCreditLimit = true;
                 using (var userCreditService = new UserCreditService())
                 {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                    int creditLimit = userCreditService.GetCreditLimit(user.LastName);
                     user.CreditLimit = creditLimit;
                 }
             }
