@@ -4,13 +4,19 @@ namespace LegacyApp
 {
     public class UserService
     {
-        private ClientRepository _clientRepository;
-        private UserCreditService _userCreditService;
+        private IClientRepository _clientRepository;
+        private IUserCreditService _userCreditService;
+        private IUserDataAccess _userDataAccess;
 
-        public UserService()
+        public UserService() : this(new ClientRepository(), new UserCreditService(), new UserDataAccessAdapter())
         {
-            _clientRepository = new ClientRepository();
-            _userCreditService = new UserCreditService();
+        }
+
+        public UserService(IClientRepository clientRepository, IUserCreditService userCreditService, IUserDataAccess userDataAccess)
+        {
+            _clientRepository = clientRepository;
+            _userCreditService = userCreditService;
+            _userDataAccess = userDataAccess;
         }
         
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
@@ -26,8 +32,8 @@ namespace LegacyApp
             {
                 return false;
             }
-
-            UserDataAccess.AddUser(user);
+            _userDataAccess.AddUser(user);
+            
             return true;
         }
 
@@ -43,16 +49,8 @@ namespace LegacyApp
                 FirstName = firstName,
                 LastName = lastName
             };
-            CalculateUserCreditLimit(user, client);
+            _userCreditService.CalculateUserCreditLimit(user, client);
             return user;
-        }
-
-        private void CalculateUserCreditLimit(User user, Client client)
-        {
-            using (_userCreditService)
-            {
-                _userCreditService.CalculateUserCreditLimit(user, client);
-            }
         }
     }
 }
